@@ -59,22 +59,19 @@ app.get("/scrape", function (req, res) {
     request("https://pitchfork.com/latest/", function (error, response, html) {
         //Load that into cheerio and save it to $ for a shorthand selector
         var $ = cheerio.load(html);
-
+        
+        // .livestream-crown #site-content #the-latest .lower-section .third-tier .infinite-container .latest-collection-fragment__list.children()
         //Grab every h2 within an article tag
-        $("article-details module__article-details").each(function(i, element) {
+        $("#the-latest").find('.lower-section .news-module').each(function(i, element) {
             // Save an empty result object
             var result = {};
       
             // Add the text and href of every link, and save them as properties of the result object
-            result.title = $(this)
-              .children("a")
-              .text();
-            result.link = $(this)
-              .children("a")
-              .attr("href");
+            result.title = $(element).children().find('.title-link h2').text()
+            result.link = 'https://pitchfork.com' + $(element).children().find('.title-link').attr('href')
       
             // Create a new Article using the `result` object built from scraping
-            db.Article.create(result)
+            articleModel.create(result)
               .then(function(dbArticle) {
                 // View the added result in the console
                 console.log(dbArticle);
@@ -87,13 +84,14 @@ app.get("/scrape", function (req, res) {
 
         // If we were able to successfully scrape and save an article, send a message to the client
         res.send("Scrape Complete");
+
     });
 });
 
 // Route for getting all articles from the db
 app.get("/articles", function(req, res) {
     // Grab every document in the articles collection
-    db.Article.find({})
+    articleModel.find({})
       .then(function(dbArticle) {
         // If we were able to successfully find articles, send them back to the client
         res.json(dbArticle);
@@ -107,8 +105,8 @@ app.get("/articles", function(req, res) {
 // Route for grabbing a specific article by id, populate it with it's comment
 app.get("/articles/:id", function(req, res) {
     // Using the id passed in the id parameter, prepare a query that finds the matching one in our db...
-    db.Article.findOne({ _id: req.params.id })
-      // ..and populate all of the notes associated with it
+    articleModel.findOne({ _id: req.params.id })
+      // ..and populate all of the comments associated with it
       .populate("comment")
       .then(function(dbArticle) {
         // If we were able to successfully find an article with the given id, send it back to the client
@@ -122,13 +120,13 @@ app.get("/articles/:id", function(req, res) {
 
 // Route for saving/updating an article's associated cote
 app.post("/articles/:id", function(req, res) {
-    // Create a new note and pass the req.body to the entry
-    db.Note.create(req.body)
-      .then(function(dbNote) {
-        // If a Note was created successfully, find one article with an `_id` equal to `req.params.id`. Update the article to be associated with the new Note
+    // Create a new comment and pass the req.body to the entry
+    commentModel.create(req.body)
+      .then(function(dbComment) {
+        // If a comment was created successfully, find one article with an `_id` equal to `req.params.id`. Update the article to be associated with the new comment
         // { new: true } tells the query that we want it to return the updated User -- it returns the original by default
         // Since our mongoose query returns a promise, we can chain another `.then` which receives the result of the query
-        return db.Article.findOneAndUpdate({ _id: req.params.id }, { note: dbcomment._id }, { new: true });
+        return articleModel.findOneAndUpdate({ _id: req.params.id }, { comment: dbcomment._id }, { new: true });
       })
       .then(function(dbArticle) {
         // If we were able to successfully update an Article, send it back to the client
