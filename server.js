@@ -118,7 +118,7 @@ app.get("/articles/:id", function(req, res) {
       });
   });
 
-// Route for saving/updating an article's associated cote
+// Route for saving/updating an article's associated comments
 app.post("/articles/:id", function(req, res) {
     // Create a new comment and pass the req.body to the entry
     commentModel.create(req.body)
@@ -137,6 +137,8 @@ app.post("/articles/:id", function(req, res) {
         res.json(err);
       });
   });
+
+
 
 // Start the server
 var port = process.env.PORT || 8080;

@@ -17,15 +17,50 @@
 <div class="container-fluid bg-1 text-center">
   <h2 class="margin">Pitchfork Scraper</h3>
   <img src="./images/pitchforklogo.jpg" class="img-responsive img-circle margin" style="display:inline" alt="pitchfork-logo" width="350" height="350">
-  <h3>Bringing you the latest news in music. Press the Scrape button to get started!</h3>
+  <h3>Bringing you the latest news in music. Press the Get New Articles button to get started!</h3>
   <br>
-<a href="/scrape" class="btn btn-primary btn-lg" role="button">Scrape</a>
+<a href="/scrape" class="btn btn-primary btn-lg" role="button">Get New Articles</a>
+
 
 </div>
 
-<!-- Footer -->
-<footer class="container-fluid bg-4 text-center">
-</footer>
+<h2 class="text-center">Scraped Articles</h2>
+
+{{#each articles}}
+{{#unless this.saved}}
+
+<div class="container">
+  <div class="row">
+
+    <div class="col-sm-12">
+      
+      <div class="container-fluid header">
+      
+        <div class="col-sm-11">
+          <h4><a href={{this.link}} target="_blank">{{this.title}}</a></h4>
+        </div>
+
+        <div class="col-sm-1">
+          <form action="/{{this._id}}?_method=PUT" method="POST">
+            <input name="saved" value=true type="hidden">
+
+            <button class="btn btn-default" type="submit">Save!</button>
+
+          </form>
+        </div>
+
+      </div>
+
+      <div class="container-fluid">
+        <p>{{this.summary}}</p>
+      </div>
+  
+    </div>
+  </div>
+</div>
+
+{{/unless}}
+{{/each}}
 
 </body>
 </html>

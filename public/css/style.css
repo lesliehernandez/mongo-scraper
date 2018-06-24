@@ -9,18 +9,11 @@
       background-color: #717EC3;
       color: #ffffff;
   }
-  .bg-2 { 
-      background-color: #615D6C; 
-      color: #ffffff;
-  }
-  .bg-3 { 
-      background-color: #ffffff; /* White */
-      color: #555555;
-  }
-  .bg-4 { 
-      background-color: #2f2f2f; 
-      color: #fff;
-  }
+  #articles { 
+    background-color: #717EC3;
+    color: #ffffff;
+}
+
   .container-fluid {
       padding-top: 70px;
       padding-bottom: 70px;
